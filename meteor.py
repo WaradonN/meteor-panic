@@ -1,8 +1,6 @@
 import pygame
 from sys import exit
 
-from pygame.constants import KEYDOWN, K_d
-
 # meta and inner works
 pygame.init()
 screen = pygame.display.set_mode((450, 600)) #450*600 
@@ -27,16 +25,16 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        if key[pygame.K_d]: # Go Right
-            if char_pos_x >= 385:
-                char_pos_x += 0
-            elif char_pos_x < 385:
-                char_pos_x += 6
-        elif key[pygame.K_a]: # Go Left
-            if char_pos_x <= 0:
-                char_pos_x -= 0
-            if char_pos_x > 0:
-                char_pos_x -= 6
+    if key[pygame.K_d]: # Go Right
+        if char_pos_x >= 385:
+            char_pos_x += 0
+        elif char_pos_x < 385:
+            char_pos_x += 4
+    if key[pygame.K_a]: # Go Left
+        if char_pos_x <= 0:
+            char_pos_x -= 0
+        if char_pos_x > 0:
+            char_pos_x -= 4
     ## draw stuff
     ### enviroment
     screen.blit(sky_surface, (0,0))
@@ -45,10 +43,7 @@ while True:
     ### stuff that change
     screen.blit(character, (char_pos_x, 400))
     ### game state (wrongly used technical word, wow!)
-    # if char_pos_x <= 0:
-    #     char_pos_x = 0
-    # if char_pos_x >= 385:
-    #     char_pos_x = 385
+
     ## update thing
     pygame.display.update()
     clock.tick(90)
