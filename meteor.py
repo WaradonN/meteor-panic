@@ -3,6 +3,43 @@ import random
 from sys import exit
 
 ###### functions and good stuffs ######
+def meteor1_movment(meteor_rect_list):
+    if meteor_rect_list:
+        for meteor_rect in meteor_rect_list:
+            meteor_rect.y += 2.3
+            screen.blit(meteor1,meteor_rect)
+        meteor_rect_list = [meteor for meteor in  meteor_rect_list if meteor.y < 700]
+        return meteor_rect_list
+    else:
+        return []
+
+def meteor2_movment(meteor_rect_list):
+    if meteor_rect_list:
+        for meteor_rect in meteor_rect_list:
+            meteor_rect.y += 4
+            screen.blit(meteor2,meteor_rect)
+        meteor_rect_list = [meteor for meteor in  meteor_rect_list if meteor.y < 700]
+        return meteor_rect_list
+    else:
+        return []
+
+def meteor3_movment(meteor_rect_list):
+    if meteor_rect_list:
+        for meteor_rect in meteor_rect_list:
+            meteor_rect.y += 4.777
+            screen.blit(meteor3,meteor_rect)
+        meteor_rect_list = [meteor for meteor in  meteor_rect_list if meteor.y < 700]
+        return meteor_rect_list
+    else:
+        return []
+
+def collision(player,meteor):
+    if meteor:
+        for meteor_rect in meteor:
+            if player.colliderect(meteor_rect):
+                return True
+    return False
+
 def mili2format(time): #00:00:000
     mili = time
     sec = mili // 1000
@@ -30,85 +67,94 @@ clock = pygame.time.Clock()
 gamefont = pygame.font.Font('asset/PressStart2P.ttf', 13)
 
 # initial state
-main_menu = True
 alive = False
 start_time = 0
 final_time = mili2format(0)
 
 # stuff to draw
-main_menu_surf = pygame.image.load('asset/main_menu.png').convert()
+gameover = pygame.image.load('asset/gameover.png').convert_alpha()
 ground_surface = pygame.image.load('asset/ground.png').convert() # 450*100
 sky_surface = pygame.image.load('asset/sky.png').convert() # 450*600 
 exo_surface = pygame.image.load('asset/fallen_sky.png').convert() # 450*125
-character = pygame.image.load('asset/character_hitbox.png').convert_alpha() # 65*100
-character_expired = pygame.image.load('asset/character_expired.png').convert_alpha()
-meteor = pygame.image.load('asset/meteor.png').convert()
-gameover = pygame.image.load('asset/gameover.png').convert_alpha()
 
-# rect(temporary dont know about sprite class yet)
-character_rect = character.get_rect(topleft = (200, 400))
-meteor_rect = meteor.get_rect(center = (400, 475))
+# event
+meteor_time_1 = pygame.USEREVENT + 1
+pygame.time.set_timer(meteor_time_1, random.randint(1500, 3000))
+meteor_time_2 = pygame.USEREVENT + 2
+pygame.time.set_timer(meteor_time_2, random.randint(450, 500))
+meteor_time_3 = pygame.USEREVENT + 3
+pygame.time.set_timer(meteor_time_3, random.randint(550, 700))
 
-# game state
-meteor_time = pygame.USEREVENT + 1
-pygame.time.set_timer(meteor_time, random.randint(900, 1100))
+# meteor
+meteor1 = pygame.image.load('asset/meteor_var_1.png').convert()
+meteor1_rect = meteor1.get_rect(center = (random.randint(-50, 550), -100))
+meteor1_rect_list = []
+meteor2 = pygame.image.load('asset/meteor_var_2.png').convert()
+meteor2_rect = meteor2.get_rect(center = (random.randint(-50, 550), -100))
+meteor2_rect_list = []
+meteor3 = pygame.image.load('asset/meteor_var_3.png').convert()
+meteor3_rect = meteor3.get_rect(center = (random.randint(-50, 550), -100))
+meteor3_rect_list = []
+
+# charecter
+character_surf = pygame.image.load('asset/character_1_hitbox.png').convert_alpha() # 65*100
+character_rect = character_surf.get_rect(topleft = (210, 400))
+
 
 while True:
+    ########## Event ##########
     key = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-    
-    ########## Main Menu ##########
-    if main_menu == True:
-        screen.blit(main_menu_surf, (0,0))
-        if key[pygame.K_SPACE]:
-            main_menu = False
-            alive = True
-    ###############################
+        if event.type == meteor_time_1:
+            meteor1_rect_list.append(meteor1.get_rect(center = (random.randint(0, 550), 0)))
+        if event.type == meteor_time_2:
+            meteor2_rect_list.append(meteor2.get_rect(center = (random.randint(0, 550), 0)))
+        if event.type == meteor_time_3:
+            meteor3_rect_list.append(meteor3.get_rect(center = (random.randint(0, 550), 0)))
+    ###########################
 
     ########## Input ##########
-    if key[pygame.K_d] and alive: # Go Right
-        if character_rect.x >= 385:
-            character_rect.x += 0
-        elif character_rect.x < 385:
-            character_rect.x += 4
-    if key[pygame.K_a] and alive: # Go Left
-        if character_rect.x <= 0:
-            character_rect.x -= 0
-        if character_rect.x > 0:
-            character_rect.x -= 4
+    if key[pygame.K_d] and character_rect.x < 385: # Go Right
+        character_rect.x += 4
+    if key[pygame.K_a] and character_rect.x > 0: # Go Left
+        character_rect.x -= 4
     if key[pygame.K_SPACE] and alive == False:
         character_rect.x = 200
         alive = True
         start_time = pygame.time.get_ticks()
-    if key[pygame.K_ESCAPE]:
-            main_menu = True
     ###########################
     
     ########## The Game Itself ##########
-    if alive and main_menu == False:
+    if alive:
         ### enviroment
         final_time = mili2format(display_score())
         screen.blit(sky_surface, (0,0))
-        screen.blit(exo_surface, (0,0))
-        screen.blit(ground_surface, (0, 500))
         screen.blit(gamefont.render('Press \'esc\' to quit', False, 'black'), (10, 10))
-        display_score()
-        ### stuff that changeddd
-        screen.blit(meteor, meteor_rect)
+        ### stuff that change
+        meteor1_rect_list = meteor1_movment(meteor1_rect_list)
+        meteor2_rect_list = meteor2_movment(meteor2_rect_list)
+        meteor3_rect_list = meteor3_movment(meteor3_rect_list)
         if alive:
-            screen.blit(character, character_rect)
-        else:
-            screen.blit(character_expired, character_rect)
-        ### game condition
-        if character_rect.colliderect(meteor_rect):
+            screen.blit(character_surf, character_rect)
+        ### die condition
+        if collision(character_rect,meteor1_rect_list):
             alive = False
-    elif alive == False and main_menu == False:
+        if collision(character_rect,meteor2_rect_list):
+            alive = False
+        if collision(character_rect,meteor3_rect_list):
+            alive = False
+        screen.blit(exo_surface, (0,0))
+        screen.blit(ground_surface,(0,500))
+        display_score()
+    elif alive == False:
+        meteor1_rect_list.clear()
+        meteor2_rect_list.clear()
+        meteor3_rect_list.clear()
         final = gamefont.render('Your time : %s' %final_time, False, 'white')
         final_rect = final.get_rect(center = (220, 300))
-        screen.blit(character_expired, character_rect)
         screen.blit(gameover, (0,0))
         pygame.draw.rect(screen,'black',(75,275,300,50))
         screen.blit(final, final_rect)
