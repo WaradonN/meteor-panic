@@ -51,11 +51,27 @@ def mili2format(time): #00:00:000
 def display_score():
     """displaying times simple"""
     survive_time = pygame.time.get_ticks() - start_time
-    time_surf = gamefont.render(mili2format(survive_time), False, 'black')
-    time_rect = time_surf.get_rect(topright = (425,60))
+    time_surf = gamefont.render(mili2format(survive_time), False, 'white')
+    time_rect = time_surf.get_rect(topright = (430,57))
     time_rect_rtt = pygame.transform.rotozoom(time_surf,10,1)
     screen.blit(time_rect_rtt, time_rect)
     return survive_time
+
+def char_animation():
+    global character_surf, char_index
+    if key[pygame.K_a]:
+        char_index += 0.1
+        if char_index >= len(char_ani):
+            char_index = 1
+        character_surf = char_ani[int(char_index)]
+    elif key[pygame.K_d]:
+        char_index += 0.1
+        if char_index >= len(char_ani):
+            char_index = 1
+        character_surf = char_ani[int(char_index)]
+        character_surf = pygame.transform.flip(character_surf,True,False)
+    else:
+        character_surf = char_ani[0]
 
 # meta and inner works
 pygame.init()
@@ -79,8 +95,9 @@ gameover = pygame.image.load('asset/gameover.png').convert_alpha() # 450*600
 ground_surface = pygame.image.load('asset/ground.png').convert() # 450*100
 sky_surface = pygame.image.load('asset/sky.png').convert() # 450*600 
 exo_surface = pygame.image.load('asset/fallen_sky.png').convert() # 450*125
-main_menu = pygame.image.load('asset/main_menu.png') # 450*600
-tutorial = pygame.image.load('asset/how_to_screen.png') # 450*600
+main_menu = pygame.image.load('asset/main_menu.png').convert() # 450*600
+tutorial = pygame.image.load('asset/how_to_screen.png').convert() # 450*600
+score_border = pygame.image.load('asset/scoreborder.png').convert_alpha()
 
 # event
 meteor_time_1 = pygame.USEREVENT + 1
@@ -91,18 +108,23 @@ meteor_time_3 = pygame.USEREVENT + 3
 pygame.time.set_timer(meteor_time_3, random.randint(500, 1250)) ## smallest
 
 # meteor
-meteor1 = pygame.image.load('asset/meteor_var_1.png').convert() #50*50
+meteor1 = pygame.image.load('asset/meteor_var_1.png').convert_alpha() #50*50
 meteor1_rect = meteor1.get_rect(center = (random.randint(-50, 550), -100))
 meteor1_rect_list = []
-meteor2 = pygame.image.load('asset/meteor_var_2.png').convert() #40*55
+meteor2 = pygame.image.load('asset/meteor_var_2.png').convert_alpha() #40*55
 meteor2_rect = meteor2.get_rect(center = (random.randint(-50, 550), -100))
 meteor2_rect_list = []
-meteor3 = pygame.image.load('asset/meteor_var_3.png').convert() #30*30
+meteor3 = pygame.image.load('asset/meteor_var_3.png').convert_alpha() #30*30
 meteor3_rect = meteor3.get_rect(center = (random.randint(-50, 550), -100))
 meteor3_rect_list = []
 
 # charecter
-character_surf = pygame.image.load('asset/character_1_hitbox.png').convert_alpha() # 65*100
+char_stand = pygame.image.load('asset/character_1.png').convert_alpha() # 65*100
+char_walk_2 = pygame.image.load('asset/character_2.png').convert_alpha() # 65*100
+char_walk_3 = pygame.image.load('asset/character_3.png').convert_alpha() # 65*100
+char_ani = [char_stand, char_walk_2, char_walk_3]
+char_index = 0
+character_surf = char_ani[char_index]
 character_rect = character_surf.get_rect(topleft = (210, 400))
 
 
@@ -128,6 +150,7 @@ while True:
             character_rect.x += speed
         if key[pygame.K_a] and character_rect.x > 0: # Go Left
             character_rect.x -= speed
+    ########## Menu Navigation ##########
     if key[pygame.K_SPACE]:
         if menu == False and how_to == False:
             character_rect.x = 200
@@ -171,6 +194,7 @@ while True:
         meteor2_rect_list = meteor2_movment(meteor2_rect_list)
         meteor3_rect_list = meteor3_movment(meteor3_rect_list)
         if alive:
+            char_animation()
             screen.blit(character_surf, character_rect)
         ### die condition
         if collision(character_rect,meteor1_rect_list):
@@ -184,6 +208,7 @@ while True:
             how_to == False
         screen.blit(exo_surface, (0,0))
         screen.blit(ground_surface,(0,500))
+        screen.blit(score_border, (250,25))
         display_score()
     elif alive == False and menu == False and how_to == False:
         meteor1_rect_list.clear()
@@ -199,6 +224,6 @@ while True:
     elif alive == False and menu == False and how_to == True:
         screen.blit(tutorial, (0,0))
     #####################################
-    print('menu: %r | alive: %r | how_to: %r' %(menu,alive,how_to))
+    # print('menu: %r | alive: %r | how_to: %r' %(menu,alive,how_to))
     pygame.display.update()
     clock.tick(60)
