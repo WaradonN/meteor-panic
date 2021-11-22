@@ -90,12 +90,12 @@ alive = False
 how_to = False
 start_time = 0
 final_time = mili2format(0)
-speed = 4
+speed = 4.25
 
 # stuff to draw
 gameover = pygame.image.load('asset/gameover.png').convert_alpha() # 450*600
 ground_surface = pygame.image.load('asset/ground.png').convert() # 450*100
-sky_surface = pygame.image.load('asset/sky_t.png').convert() # 450*600 
+sky_surface = pygame.image.load('asset/sky.png').convert() # 450*600 
 exo_surface = pygame.image.load('asset/fallen_sky.png').convert_alpha() # 450*125
 main_menu = pygame.image.load('asset/main_menu.png').convert() # 450*600
 tutorial = pygame.image.load('asset/how_to_screen.png').convert() # 450*600
@@ -103,11 +103,11 @@ score_border = pygame.image.load('asset/scoreborder.png').convert_alpha()
 
 # event
 meteor_time_1 = pygame.USEREVENT + 1
-pygame.time.set_timer(meteor_time_1, random.randint(2500, 3500)) ## biggest one
+pygame.time.set_timer(meteor_time_1, random.randint(2750, 4000)) ## biggest one
 meteor_time_2 = pygame.USEREVENT + 2
-pygame.time.set_timer(meteor_time_2, random.randint(1000, 1500)) ## long
+pygame.time.set_timer(meteor_time_2, random.randint(1200, 1750)) ## long
 meteor_time_3 = pygame.USEREVENT + 3
-pygame.time.set_timer(meteor_time_3, random.randint(500, 1250)) ## smallest
+pygame.time.set_timer(meteor_time_3, random.randint(550, 1150)) ## smallest
 
 # meteor
 meteor1 = pygame.image.load('asset/meteor_var_1.png').convert_alpha() #50*50
@@ -224,7 +224,7 @@ while True:
     elif alive == False and menu == True and how_to == False:
         screen.blit(main_menu, (0,0))
     elif alive == False and menu == False and how_to == True:
-        screen.blit(tutorial, (0,0))
+        screen.blit(tutorial, (0,1))
     #####################################
     # print('menu: %r | alive: %r | how_to: %r' %(menu,alive,how_to))
     pygame.display.update()
