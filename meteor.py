@@ -16,7 +16,7 @@ def meteor1_movment(meteor_rect_list):
 def meteor2_movment(meteor_rect_list):
     if meteor_rect_list:
         for meteor_rect in meteor_rect_list:
-            meteor_rect.y += 4
+            meteor_rect.y += 3.777
             screen.blit(meteor2,meteor_rect)
         meteor_rect_list = [meteor for meteor in  meteor_rect_list if meteor.y < 700]
         return meteor_rect_list
@@ -26,7 +26,7 @@ def meteor2_movment(meteor_rect_list):
 def meteor3_movment(meteor_rect_list):
     if meteor_rect_list:
         for meteor_rect in meteor_rect_list:
-            meteor_rect.y += 4.777
+            meteor_rect.y += 4.5
             screen.blit(meteor3,meteor_rect)
         meteor_rect_list = [meteor for meteor in  meteor_rect_list if meteor.y < 700]
         return meteor_rect_list
@@ -52,14 +52,16 @@ def display_score():
     """displaying times simple"""
     survive_time = pygame.time.get_ticks() - start_time
     time_surf = gamefont.render(mili2format(survive_time), False, 'white')
-    time_rect = time_surf.get_rect(topright = (430,57))
-    time_rect_rtt = pygame.transform.rotozoom(time_surf,10,1)
+    time_rect = time_surf.get_rect(topright = (430,58))
+    time_rect_rtt = pygame.transform.rotozoom(time_surf,7,1)
     screen.blit(time_rect_rtt, time_rect)
     return survive_time
 
 def char_animation():
     global character_surf, char_index
-    if key[pygame.K_a]:
+    if key[pygame.K_a] and key[pygame.K_d]:
+        character_surf = char_ani[0]
+    elif key[pygame.K_a]:
         char_index += 0.1
         if char_index >= len(char_ani):
             char_index = 1
@@ -76,7 +78,7 @@ def char_animation():
 # meta and inner works
 pygame.init()
 screen = pygame.display.set_mode((450, 600)) #450*600
-icon = pygame.image.load('asset/icon.png').convert() # 100*100 or smaller
+icon = pygame.image.load('asset/meteor_var_1.png').convert_alpha() # 100*100 or smaller
 pygame.display.set_caption('Meteor Panic!')
 pygame.display.set_icon(icon)
 clock = pygame.time.Clock()
@@ -93,8 +95,8 @@ speed = 4
 # stuff to draw
 gameover = pygame.image.load('asset/gameover.png').convert_alpha() # 450*600
 ground_surface = pygame.image.load('asset/ground.png').convert() # 450*100
-sky_surface = pygame.image.load('asset/sky.png').convert() # 450*600 
-exo_surface = pygame.image.load('asset/fallen_sky.png').convert() # 450*125
+sky_surface = pygame.image.load('asset/sky_t.png').convert() # 450*600 
+exo_surface = pygame.image.load('asset/fallen_sky.png').convert_alpha() # 450*125
 main_menu = pygame.image.load('asset/main_menu.png').convert() # 450*600
 tutorial = pygame.image.load('asset/how_to_screen.png').convert() # 450*600
 score_border = pygame.image.load('asset/scoreborder.png').convert_alpha()
@@ -125,7 +127,7 @@ char_walk_3 = pygame.image.load('asset/character_3.png').convert_alpha() # 65*10
 char_ani = [char_stand, char_walk_2, char_walk_3]
 char_index = 0
 character_surf = char_ani[char_index]
-character_rect = character_surf.get_rect(topleft = (210, 400))
+character_rect = character_surf.get_rect(topleft = (210, 425))
 
 
 while True:
@@ -159,7 +161,7 @@ while True:
         elif menu:
             alive = True
             menu = False
-    if key[pygame.K_LSHIFT]:
+    if key[pygame.K_TAB]:
         if menu:
             menu = False
             alive = False
@@ -188,7 +190,7 @@ while True:
     if alive == True and menu == False and how_to == False:
         ### enviroment
         final_time = mili2format(display_score())
-        screen.blit(sky_surface, (0,0))
+        screen.blit(sky_surface, (0,-30))
         ### stuff that change
         meteor1_rect_list = meteor1_movment(meteor1_rect_list)
         meteor2_rect_list = meteor2_movment(meteor2_rect_list)
@@ -207,7 +209,7 @@ while True:
             alive = False
             how_to == False
         screen.blit(exo_surface, (0,0))
-        screen.blit(ground_surface,(0,500))
+        screen.blit(ground_surface,(0,525))
         screen.blit(score_border, (250,25))
         display_score()
     elif alive == False and menu == False and how_to == False:
