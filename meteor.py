@@ -23,11 +23,11 @@ def meteor2_movment(meteor_rect_list):
     else:
         return []
 
-def meteor3_movment(meteor_rect_list):
+def meteor3_movment(thing, meteor_rect_list):
     if meteor_rect_list:
         for meteor_rect in meteor_rect_list:
-            meteor_rect.y += 4.5
-            screen.blit(meteor3,meteor_rect)
+            meteor_rect.y += 4.125
+            screen.blit(thing,meteor_rect)
         meteor_rect_list = [meteor for meteor in  meteor_rect_list if meteor.y < 700]
         return meteor_rect_list
     else:
@@ -88,9 +88,11 @@ gamefont = pygame.font.Font('asset/PressStart2P.ttf', 13)
 menu = True
 alive = False
 how_to = False
+speed_up_status = False
 start_time = 0
 final_time = mili2format(0)
-speed = 4.25
+speed = 3.5
+speed_up_timer = 0
 
 # stuff to draw
 gameover = pygame.image.load('asset/gameover.png').convert_alpha() # 450*600
@@ -108,6 +110,8 @@ meteor_time_2 = pygame.USEREVENT + 2
 pygame.time.set_timer(meteor_time_2, random.randint(1200, 1750)) ## long
 meteor_time_3 = pygame.USEREVENT + 3
 pygame.time.set_timer(meteor_time_3, random.randint(550, 1150)) ## smallest
+power_up_time = pygame.USEREVENT + 4
+pygame.time.set_timer(power_up_time, 5000)
 
 # meteor
 meteor1 = pygame.image.load('asset/meteor_var_1.png').convert_alpha() #50*50
@@ -119,6 +123,9 @@ meteor2_rect_list = []
 meteor3 = pygame.image.load('asset/meteor_var_3.png').convert_alpha() #30*30
 meteor3_rect = meteor3.get_rect(center = (random.randint(-50, 550), -100))
 meteor3_rect_list = []
+speed_up = pygame.image.load('asset/speed_pu.png').convert()
+speed_up_rect = speed_up.get_rect(center = (random.randint(-50, 550), -100))
+power_up_rect_list = []
 
 # charecter
 char_stand = pygame.image.load('asset/character_1.png').convert_alpha() # 65*100
@@ -144,6 +151,8 @@ while True:
                 meteor2_rect_list.append(meteor2.get_rect(center = (random.randint(0, 550), 0)))
             if event.type == meteor_time_3:
                 meteor3_rect_list.append(meteor3.get_rect(center = (random.randint(0, 550), 0)))
+            if event.type == power_up_time:
+                power_up_rect_list.append(speed_up.get_rect(center = (random.randint(0, 550), 0)))
     ###########################
 
     ########## Input ##########
@@ -174,6 +183,7 @@ while True:
             meteor1_rect_list.clear()
             meteor2_rect_list.clear()
             meteor3_rect_list.clear()
+            power_up_rect_list.clear()
         if alive == True and menu == False and how_to == False:
             menu = True
             how_to = False
@@ -181,6 +191,7 @@ while True:
             meteor1_rect_list.clear()
             meteor2_rect_list.clear()
             meteor3_rect_list.clear()
+            power_up_rect_list.clear()
         elif alive == False and menu == False and how_to == True:
             menu = True
             how_to = False
@@ -194,7 +205,8 @@ while True:
         ### stuff that change
         meteor1_rect_list = meteor1_movment(meteor1_rect_list)
         meteor2_rect_list = meteor2_movment(meteor2_rect_list)
-        meteor3_rect_list = meteor3_movment(meteor3_rect_list)
+        meteor3_rect_list = meteor3_movment(meteor3, meteor3_rect_list)
+        power_up_rect_list = meteor3_movment(speed_up, power_up_rect_list)
         if alive:
             char_animation()
             screen.blit(character_surf, character_rect)
@@ -208,14 +220,33 @@ while True:
         if collision(character_rect,meteor3_rect_list):
             alive = False
             how_to == False
+        if collision(character_rect,power_up_rect_list):
+            speed_up_timer = 500
+            speed_up_status = True
+            power_up_rect_list.clear()
+            speed = 5
+        if speed_up_status:
+            speed_up_timer -= 1
+            spped_time_dis = gamefont.render(mili2format(speed_up_timer), False, 'white')
+            screen.blit(spped_time_dis, (10,10))
+        if speed_up_timer <= 0:
+            speed_up_status = False
+            speed_up_timer = 0
+            speed = 4
         screen.blit(exo_surface, (0,0))
         screen.blit(ground_surface,(0,525))
         screen.blit(score_border, (250,25))
+        if speed_up_status:
+            screen.blit(spped_time_dis, (320,545))
+            screen.blit(speed_up, (400,565))
         display_score()
     elif alive == False and menu == False and how_to == False:
         meteor1_rect_list.clear()
         meteor2_rect_list.clear()
         meteor3_rect_list.clear()
+        power_up_rect_list.clear()
+        speed = 4
+        speed_up_timer = 0
         final = gamefont.render('Your time : %s' %final_time, False, 'white')
         final_rect = final.get_rect(center = (220, 300))
         screen.blit(gameover, (0,0))
