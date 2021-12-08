@@ -40,18 +40,21 @@ def collision(player,meteor):
                 return True
     return False
 
-def mili2format(time): #00:00:000
+def mili2format(time, power): #00:00:000
     mili = time
     sec = mili // 1000
     mili_left = mili % 1000
     minu = sec // 60
     sec_left = sec % 60
-    return "%02d:%02d:%03d" %(minu,sec_left,mili_left)
+    if power:
+        return "%02d:%03d" %(sec_left, mili_left)
+    else:
+        return "%02d:%02d:%03d" %(minu,sec_left, mili_left)
 
 def display_score():
     """displaying times simple"""
     survive_time = pygame.time.get_ticks() - start_time
-    time_surf = gamefont.render(mili2format(survive_time), False, 'white')
+    time_surf = gamefont.render(mili2format(survive_time, False), False, 'white')
     time_rect = time_surf.get_rect(topright = (430,58))
     time_rect_rtt = pygame.transform.rotozoom(time_surf,7,1)
     screen.blit(time_rect_rtt, time_rect)
@@ -90,7 +93,7 @@ alive = False
 how_to = False
 speed_up_status = False
 start_time = 0
-final_time = mili2format(0)
+final_time = mili2format(0, False)
 speed = 3.5
 speed_up_timer = 0
 
@@ -102,6 +105,9 @@ exo_surface = pygame.image.load('asset/fallen_sky.png').convert_alpha() # 450*12
 main_menu = pygame.image.load('asset/main_menu.png').convert() # 450*600
 tutorial = pygame.image.load('asset/how_to_screen.png').convert() # 450*600
 score_border = pygame.image.load('asset/scoreborder.png').convert_alpha()
+
+# sound
+
 
 # event
 meteor_time_1 = pygame.USEREVENT + 1
@@ -199,8 +205,9 @@ while True:
     
     ########## The Game Itself ##########
     if alive == True and menu == False and how_to == False:
+        pygame.mixer.music.set_volume(0.3)
         ### enviroment
-        final_time = mili2format(display_score())
+        final_time = mili2format(display_score(), False)
         screen.blit(sky_surface, (0,-30))
         ### stuff that change
         meteor1_rect_list = meteor1_movment(meteor1_rect_list)
@@ -212,22 +219,30 @@ while True:
             screen.blit(character_surf, character_rect)
         ### die condition
         if collision(character_rect,meteor1_rect_list):
+            pygame.mixer.music.load('audio/gameover.mp3')
+            pygame.mixer.music.play()
             alive = False
             how_to == False
         if collision(character_rect,meteor2_rect_list):
+            pygame.mixer.music.load('audio/gameover.mp3')
+            pygame.mixer.music.play()
             alive = False
             how_to == False
         if collision(character_rect,meteor3_rect_list):
+            pygame.mixer.music.load('audio/gameover.mp3')
+            pygame.mixer.music.play()
             alive = False
             how_to == False
         if collision(character_rect,power_up_rect_list):
+            pygame.mixer.music.load('audio/testsound.mp3')
+            pygame.mixer.music.play()
             speed_up_timer = 500
             speed_up_status = True
             power_up_rect_list.clear()
-            speed = 5
+            speed = 5.3333333
         if speed_up_status:
             speed_up_timer -= 1
-            spped_time_dis = gamefont.render(mili2format(speed_up_timer), False, 'white')
+            spped_time_dis = gamefont.render(mili2format(speed_up_timer, True), False, 'white')
             screen.blit(spped_time_dis, (10,10))
         if speed_up_timer <= 0:
             speed_up_status = False
@@ -237,7 +252,7 @@ while True:
         screen.blit(ground_surface,(0,525))
         screen.blit(score_border, (250,25))
         if speed_up_status:
-            screen.blit(spped_time_dis, (320,545))
+            screen.blit(spped_time_dis, (375,545))
             screen.blit(speed_up, (400,565))
         display_score()
     elif alive == False and menu == False and how_to == False:
