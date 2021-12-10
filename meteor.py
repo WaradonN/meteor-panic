@@ -103,11 +103,12 @@ ground_surface = pygame.image.load('asset/ground.png').convert() # 450*100
 sky_surface = pygame.image.load('asset/sky.png').convert() # 450*600 
 exo_surface = pygame.image.load('asset/fallen_sky.png').convert_alpha() # 450*125
 main_menu = pygame.image.load('asset/main_menu.png').convert() # 450*600
-tutorial = pygame.image.load('asset/how_to_screen.png').convert() # 450*600
+tutorial = pygame.image.load('asset/how_to_screen_test.png').convert() # 450*600
 score_border = pygame.image.load('asset/scoreborder.png').convert_alpha()
 
 # sound
 mainsong = pygame.mixer.Sound('audio/8_bit_ad.mp3')
+speedup = pygame.mixer.Sound('audio/testsound.mp3')
 
 # event
 meteor_time_1 = pygame.USEREVENT + 1
@@ -222,25 +223,21 @@ while True:
         if collision(character_rect,meteor1_rect_list):
             pygame.mixer.music.load('audio/gameover.mp3')
             pygame.mixer.music.play()
-            pygame.mixer.stop()
             alive = False
             how_to == False
         if collision(character_rect,meteor2_rect_list):
             pygame.mixer.music.load('audio/gameover.mp3')
             pygame.mixer.music.play()
-            pygame.mixer.stop()
             alive = False
             how_to == False
         if collision(character_rect,meteor3_rect_list):
             pygame.mixer.music.load('audio/gameover.mp3')
             pygame.mixer.music.play()
-            pygame.mixer.stop()
             alive = False
             how_to == False
         if collision(character_rect,power_up_rect_list):
             pygame.mixer.music.load('audio/testsound.mp3')
             pygame.mixer.music.play()
-            pygame.mixer.stop()
             speed_up_timer = 500
             speed_up_status = True
             power_up_rect_list.clear()
