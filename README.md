@@ -14,7 +14,7 @@ Just clear commit history because of accidental doxxing I did on myself a while 
 I don't know if they're still here. Proberly not, but if you do and don't want your name here (I understand lmao) contact me at, well, I want to see you try.
 | Name |  Responsible | 
 | :-------- | :--------- |
-| Me | Game Design, Development |
+| WaradoN | Game Design, Development |
 | Sutheera P. | Game Design, Normal Design |
 | Natayos | I forgot but I think also Design |
-| pseudo_0158  | Also Development but through liveshare and never commit and I think he also left from contribution |
+| pseudo_0158  | Also Development but through liveshare and never push and I think he also left from contribution |
